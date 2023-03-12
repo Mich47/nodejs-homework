@@ -1,110 +1,98 @@
-const fs = require("fs").promises;
-const { constants } = require("buffer");
-const path = require("path");
+const { setId, readContacts, writeContacts } = require("../helpers");
 
-const listContacts = async () => {
+const listContacts = async (_, res, next) => {
   try {
-    const data = await fs.readFile(
-      path.join(__dirname, "./contacts.json"),
-      "utf8"
-    );
+    const contacts = await readContacts();
 
-    const contacts = JSON.parse(data);
-
-    return contacts;
-  } catch (error) {}
+    res.json(contacts);
+  } catch (error) {
+    next(error);
+  }
 };
 
-const getContactById = async (contactId) => {
-  try {
-    const data = await fs.readFile(
-      path.join(__dirname, "./contacts.json"),
-      "utf8"
-    );
+const getContactById = async (req, res, next) => {
+  const contactId = req.params.contactId;
 
-    const contacts = JSON.parse(data);
+  try {
+    const contacts = await readContacts();
 
     const [contact] = contacts.filter(({ id }) => id === contactId);
 
-    return contact;
-  } catch (error) {}
+    if (!contact) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json(contact);
+  } catch (error) {
+    next(error);
+  }
 };
 
-const removeContact = async (contactId) => {
+const removeContact = async (req, res, next) => {
+  const { contactId } = req.params;
+
   try {
-    const data = await fs.readFile(
-      path.join(__dirname, "./contacts.json"),
-      "utf8"
-    );
+    const contacts = await readContacts();
 
-    const contacts = JSON.parse(data);
-    const updatedContacts = contacts.filter(({ id }) => id !== contactId);
+    const index = contacts.findIndex(({ id }) => id === contactId);
+    if (index === -1) {
+      return res.status(404).json({ message: "Not found" });
+    }
 
-    await fs.writeFile(
-      path.join(__dirname, "./contacts.json"),
-      JSON.stringify(updatedContacts),
-      "utf8"
-    );
+    contacts.splice(index, 1);
 
-    return { message: "contact deleted" };
-  } catch (error) {}
+    await writeContacts(contacts);
+
+    res.json({ message: "contact deleted" });
+  } catch (error) {
+    next(error);
+  }
 };
 
-const addContact = async (body) => {
-  console.log("body ", body);
-  try {
-    const data = await fs.readFile(
-      path.join(__dirname, "./contacts.json"),
-      "utf8"
-    );
+const addContact = async (req, res, next) => {
+  const { body } = req;
 
-    const contacts = JSON.parse(data);
+  try {
+    const contacts = await readContacts();
+
     const newContact = { id: setId(contacts), ...body };
     contacts.push(newContact);
 
-    await fs.writeFile(
-      path.join(__dirname, "./contacts.json"),
-      JSON.stringify(contacts),
-      "utf8"
-    );
+    await writeContacts(contacts);
 
-    return newContact;
-  } catch (error) {}
+    res.status(201).json(newContact);
+  } catch (error) {
+    next(error);
+  }
 };
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (req, res, next) => {
   try {
-    const data = await fs.readFile(
-      path.join(__dirname, "./contacts.json"),
-      "utf8"
-    );
+    const { body } = req;
 
-    const contacts = JSON.parse(data);
+    if (!Object.keys(body).length) {
+      return res.status(400).json({ message: "missing fields" });
+    }
+
+    const { contactId } = req.params;
+
+    const contacts = await readContacts();
+
     const index = contacts.findIndex(({ id }) => id === contactId);
+    if (index === -1) {
+      return res.status(404).json({ message: "Not found" });
+    }
 
     const updatedContact = { ...contacts[index], ...body };
-
     contacts.splice(index, 1, updatedContact);
 
-    await fs.writeFile(
-      path.join(__dirname, "./contacts.json"),
-      JSON.stringify(contacts),
-      "utf8"
-    );
+    await writeContacts(contacts);
 
-    return updatedContact;
-  } catch (error) {}
+    res.json(updatedContact);
+  } catch (error) {
+    next(error);
+  }
 };
-
-function setId(contacts) {
-  const newId = contacts.reduce(
-    (largeId, { id }) =>
-      (largeId = largeId > Number(id) ? largeId : Number(id)),
-    0
-  );
-
-  return (newId + 1).toString();
-}
 
 module.exports = {
   listContacts,

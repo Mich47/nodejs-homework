@@ -9,27 +9,14 @@ const {
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
-  res.json(await listContacts());
-});
+router.get("/", listContacts);
 
-router.get("/:contactId", async (req, res, next) => {
-  const id = req.params.contactId;
-  res.json(await getContactById(id));
-});
+router.get("/:contactId", getContactById);
 
-router.post("/", async (req, res, next) => {
-  res.status(201).json(await addContact(req.body));
-});
+router.post("/", addContact);
 
-router.delete("/:contactId", async (req, res, next) => {
-  const id = req.params.contactId;
-  res.status(200).json(await removeContact(id));
-});
+router.delete("/:contactId", removeContact);
 
-router.put("/:contactId", async (req, res, next) => {
-  const id = req.params.contactId;
-  res.json(await updateContact(id, req.body));
-});
+router.put("/:contactId", updateContact);
 
 module.exports = router;
