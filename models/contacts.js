@@ -18,10 +18,6 @@ const getContactById = async (req, res, next) => {
 
     const [contact] = contacts.filter(({ id }) => id === contactId);
 
-    if (!contact) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
     res.json(contact);
   } catch (error) {
     next(error);
@@ -35,10 +31,6 @@ const removeContact = async (req, res, next) => {
     const contacts = await readContacts();
 
     const index = contacts.findIndex(({ id }) => id === contactId);
-    if (index === -1) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
     contacts.splice(index, 1);
 
     await writeContacts(contacts);
@@ -70,19 +62,11 @@ const updateContact = async (req, res, next) => {
   try {
     const { body } = req;
 
-    if (!Object.keys(body).length) {
-      return res.status(400).json({ message: "missing fields" });
-    }
-
     const { contactId } = req.params;
 
     const contacts = await readContacts();
 
     const index = contacts.findIndex(({ id }) => id === contactId);
-    if (index === -1) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
     const updatedContact = { ...contacts[index], ...body };
     contacts.splice(index, 1, updatedContact);
 
