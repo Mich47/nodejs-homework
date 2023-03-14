@@ -40,7 +40,7 @@ const updateContactValidator = (req, res, next) => {
 
   const message = error.details[0].message;
 
-  res.status(422).json({ message });
+  res.status(400).json({ message });
 };
 
 module.exports = updateContactValidator;

@@ -10,7 +10,7 @@ const {
   addContact,
   removeContact,
   updateContact,
-} = require("../../models/contacts");
+} = require("../../controllers");
 
 const router = express.Router();
 

@@ -1,81 +1,65 @@
 const { setId, readContacts, writeContacts } = require("../helpers");
-
-const listContacts = async (_, res, next) => {
-  try {
-    const contacts = await readContacts();
-
-    res.json(contacts);
-  } catch (error) {
-    next(error);
-  }
+/**
+ * Get all contacts
+ * @returns Array of all contacts
+ */
+const listContacts = async () => {
+  return await readContacts();
 };
 
-const getContactById = async (req, res, next) => {
-  const contactId = req.params.contactId;
+/**
+ * Get contact by ID
+ * @returns Object of contact
+ */
+const getContactById = async (contactId) => {
+  const contacts = await readContacts();
 
-  try {
-    const contacts = await readContacts();
+  const [contact] = contacts.filter(({ id }) => id === contactId);
 
-    const [contact] = contacts.filter(({ id }) => id === contactId);
-
-    res.json(contact);
-  } catch (error) {
-    next(error);
-  }
+  return contact;
 };
 
-const removeContact = async (req, res, next) => {
-  const { contactId } = req.params;
+/**
+ * Remove contact by ID
+ */
+const removeContact = async (contactId) => {
+  const contacts = await readContacts();
 
-  try {
-    const contacts = await readContacts();
+  const index = contacts.findIndex(({ id }) => id === contactId);
+  contacts.splice(index, 1);
 
-    const index = contacts.findIndex(({ id }) => id === contactId);
-    contacts.splice(index, 1);
-
-    await writeContacts(contacts);
-
-    res.json({ message: "contact deleted" });
-  } catch (error) {
-    next(error);
-  }
+  await writeContacts(contacts);
 };
 
-const addContact = async (req, res, next) => {
-  const { body } = req;
+/**
+ * Add new contact
+ * @returns Object of added contact
+ */
+const addContact = async (body) => {
+  const contacts = await readContacts();
 
-  try {
-    const contacts = await readContacts();
+  const newContact = { id: setId(contacts), ...body };
+  contacts.push(newContact);
 
-    const newContact = { id: setId(contacts), ...body };
-    contacts.push(newContact);
+  await writeContacts(contacts);
 
-    await writeContacts(contacts);
-
-    res.status(201).json(newContact);
-  } catch (error) {
-    next(error);
-  }
+  return newContact;
 };
 
-const updateContact = async (req, res, next) => {
-  try {
-    const { body } = req;
+/**
+ * Update an existing contact
+ * @returns Object of updated contact
+ */
+const updateContact = async (contactId, body) => {
+  const contacts = await readContacts();
 
-    const { contactId } = req.params;
+  const index = contacts.findIndex(({ id }) => id === contactId);
+  const updatedContact = { ...contacts[index], ...body };
+  contacts.splice(index, 1, updatedContact);
 
-    const contacts = await readContacts();
+  await writeContacts(contacts);
 
-    const index = contacts.findIndex(({ id }) => id === contactId);
-    const updatedContact = { ...contacts[index], ...body };
-    contacts.splice(index, 1, updatedContact);
-
-    await writeContacts(contacts);
-
-    res.json(updatedContact);
-  } catch (error) {
-    next(error);
-  }
+  return updatedContact;
 };
 
 module.exports = {
