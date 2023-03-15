@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { checkValidationErrorMessage } = require("../../helpers");
 
 const updateContactValidator = (req, res, next) => {
   if (!Object.keys(req.body).length) {
@@ -10,7 +11,10 @@ const updateContactValidator = (req, res, next) => {
 
   if (name && !error) {
     const schema = Joi.object({
-      name: Joi.string().pattern(new RegExp("^[a-zA-Z .'-]+$")).min(3).max(60),
+      name: Joi.string()
+        .regex(/^[a-zA-Z .'-]+$/)
+        .min(3)
+        .max(60),
     });
 
     error = schema.validate({ name }).error;
@@ -26,10 +30,8 @@ const updateContactValidator = (req, res, next) => {
 
   if (phone && !error) {
     const schema = Joi.object({
-      phone: Joi.string().pattern(
-        new RegExp(
-          "^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{0,4}[-.\\s]?\\d{0,9}$"
-        )
+      phone: Joi.string().regex(
+        /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{0,4}[-.\s]?\d{0,9}$/
       ),
     });
 
@@ -38,7 +40,7 @@ const updateContactValidator = (req, res, next) => {
 
   if (!error) return next();
 
-  const message = error.details[0].message;
+  const message = checkValidationErrorMessage(error);
 
   res.status(400).json({ message });
 };

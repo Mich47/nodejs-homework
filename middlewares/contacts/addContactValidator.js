@@ -1,29 +1,12 @@
 const Joi = require("joi");
+const { checkValidationErrorMessage } = require("../../helpers");
 
 const addContactValidator = (req, res, next) => {
   const { name, email, phone } = req.body;
 
-  if (!name) {
-    return res.status(400).json({
-      message: `missing required "${Object.keys({ name })[0]}" field`,
-    });
-  }
-
-  if (!email) {
-    return res.status(400).json({
-      message: `missing required "${Object.keys({ email })[0]}" field`,
-    });
-  }
-
-  if (!phone) {
-    return res.status(400).json({
-      message: `missing required "${Object.keys({ phone })[0]}" field`,
-    });
-  }
-
   const schema = Joi.object({
     name: Joi.string()
-      .pattern(new RegExp("^[a-zA-Z .'-]+$"))
+      .regex(/^[a-zA-Z .'-]+$/)
       .min(3)
       .max(60)
       .required(),
@@ -31,10 +14,8 @@ const addContactValidator = (req, res, next) => {
       .email({ tlds: { allow: false } })
       .required(),
     phone: Joi.string()
-      .pattern(
-        new RegExp(
-          "^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{0,4}[-.\\s]?\\d{0,9}$"
-        )
+      .regex(
+        /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{0,4}[-.\s]?\d{0,9}$/
       )
       .required(),
   });
@@ -43,7 +24,7 @@ const addContactValidator = (req, res, next) => {
 
   if (!error) return next();
 
-  const message = error.details[0].message;
+  const message = checkValidationErrorMessage(error);
 
   res.status(400).json({ message });
 };
