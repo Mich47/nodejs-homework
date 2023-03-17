@@ -1,10 +1,11 @@
-const { setId, readContacts, writeContacts } = require("../helpers");
+const Contact = require("./contactModel");
+
 /**
  * Get all contacts
  * @returns Array of all contacts
  */
 const listContacts = async () => {
-  return await readContacts();
+  return await Contact.find();
 };
 
 /**
@@ -12,23 +13,14 @@ const listContacts = async () => {
  * @returns Object of contact
  */
 const getContactById = async (contactId) => {
-  const contacts = await readContacts();
-
-  const [contact] = contacts.filter(({ id }) => id === contactId);
-
-  return contact;
+  return await Contact.findById(contactId);
 };
 
 /**
  * Remove contact by ID
  */
 const removeContact = async (contactId) => {
-  const contacts = await readContacts();
-
-  const index = contacts.findIndex(({ id }) => id === contactId);
-  contacts.splice(index, 1);
-
-  await writeContacts(contacts);
+  await Contact.findByIdAndDelete(contactId);
 };
 
 /**
@@ -36,12 +28,7 @@ const removeContact = async (contactId) => {
  * @returns Object of added contact
  */
 const addContact = async (body) => {
-  const contacts = await readContacts();
-
-  const newContact = { id: setId(contacts), ...body };
-  contacts.push(newContact);
-
-  await writeContacts(contacts);
+  const newContact = await Contact.create(body);
 
   return newContact;
 };
@@ -51,13 +38,9 @@ const addContact = async (body) => {
  * @returns Object of updated contact
  */
 const updateContact = async (contactId, body) => {
-  const contacts = await readContacts();
-
-  const index = contacts.findIndex(({ id }) => id === contactId);
-  const updatedContact = { ...contacts[index], ...body };
-  contacts.splice(index, 1, updatedContact);
-
-  await writeContacts(contacts);
+  const updatedContact = Contact.findByIdAndUpdate(contactId, body, {
+    new: true,
+  });
 
   return updatedContact;
 };

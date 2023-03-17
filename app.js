@@ -1,11 +1,10 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
-const mongoose = require("mongoose");
 require("dotenv").config();
-console.log("env", process.env.BD_URI);
 
 const contactsRouter = require("./routes/api/contacts");
+const conectToMongoDB = require("./db/conection");
 
 const app = express();
 
@@ -14,6 +13,8 @@ const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
+
+conectToMongoDB();
 
 app.use("/api/contacts", contactsRouter);
 

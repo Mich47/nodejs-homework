@@ -2,7 +2,7 @@ const express = require("express");
 const {
   addContactValidator,
   updateContactValidator,
-  checkContactId,
+  // checkContactId,
 } = require("../../middlewares");
 const {
   listContacts,
@@ -16,15 +16,15 @@ const router = express.Router();
 
 router.get("/", listContacts);
 
-router.get("/:contactId", checkContactId, getContactById);
+router.get("/:contactId", getContactById);
 
 router.post("/", addContactValidator, addContact);
 
-router.delete("/:contactId", checkContactId, removeContact);
+router.delete("/:contactId", removeContact);
 
 router.put(
   "/:contactId",
-  checkContactId,
+  // checkContactId,
   updateContactValidator,
   updateContact
 );
