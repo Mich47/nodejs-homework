@@ -1,66 +1,47 @@
+const { asyncWrapper } = require("../helpers");
 const contactsOperations = require("../models/contacts");
 
-const listContacts = async (_, res, next) => {
-  try {
-    const contacts = await contactsOperations.listContacts();
+const listContacts = asyncWrapper(async (_, res) => {
+  const contacts = await contactsOperations.listContacts();
 
-    res.status(200).json(contacts);
-  } catch (error) {
-    next(error);
-  }
-};
+  res.status(200).json(contacts);
+});
 
-const getContactById = async (req, res, next) => {
+const getContactById = asyncWrapper(async (req, res) => {
   const contactId = req.params.contactId;
 
-  try {
-    const contact = await contactsOperations.getContactById(contactId);
+  const contact = await contactsOperations.getContactById(contactId);
 
-    res.status(200).json(contact);
-  } catch (error) {
-    next(error);
-  }
-};
+  res.status(200).json(contact);
+});
 
-const removeContact = async (req, res, next) => {
+const removeContact = asyncWrapper(async (req, res) => {
   const { contactId } = req.params;
 
-  try {
-    await contactsOperations.removeContact(contactId);
+  await contactsOperations.removeContact(contactId);
 
-    res.status(200).json({ message: "contact deleted" });
-  } catch (error) {
-    next(error);
-  }
-};
+  res.status(200).json({ message: "contact deleted" });
+});
 
-const addContact = async (req, res, next) => {
+const addContact = asyncWrapper(async (req, res) => {
   const { body } = req;
 
-  try {
-    const newContact = await contactsOperations.addContact(body);
+  const newContact = await contactsOperations.addContact(body);
 
-    res.status(201).json(newContact);
-  } catch (error) {
-    next(error);
-  }
-};
+  res.status(201).json(newContact);
+});
 
-const updateContact = async (req, res, next) => {
+const updateContact = asyncWrapper(async (req, res) => {
   const { body } = req;
   const { contactId } = req.params;
 
-  try {
-    const updatedContact = await contactsOperations.updateContact(
-      contactId,
-      body
-    );
+  const updatedContact = await contactsOperations.updateContact(
+    contactId,
+    body
+  );
 
-    res.status(200).json(updatedContact);
-  } catch (error) {
-    next(error);
-  }
-};
+  res.status(200).json(updatedContact);
+});
 
 module.exports = {
   listContacts,

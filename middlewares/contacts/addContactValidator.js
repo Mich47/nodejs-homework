@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { checkValidationErrorMessage } = require("../../helpers");
+const { checkValidationErrorMessage, AppError } = require("../../helpers");
 
 const addContactValidator = (req, res, next) => {
   const { name, email, phone } = req.body;
@@ -26,7 +26,7 @@ const addContactValidator = (req, res, next) => {
 
   const message = checkValidationErrorMessage(error);
 
-  res.status(400).json({ message });
+  next(new AppError(400, message));
 };
 
 module.exports = addContactValidator;
