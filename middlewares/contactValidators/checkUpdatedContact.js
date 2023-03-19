@@ -1,12 +1,12 @@
 const Joi = require("joi");
-const { checkValidationErrorMessage, AppError } = require("../../helpers");
+const { getValidationErrorMessage, AppError } = require("../../helpers");
 
-const updateContactValidator = (req, _, next) => {
-  if (!Object.keys(req.body).length) {
+const checkUpdatedContact = (req, _, next) => {
+  const { body } = req;
+
+  if (!Object.keys(body).length) {
     return next(new AppError(400, "missing fields"));
   }
-
-  const { name, email, phone } = req.body;
 
   const schema = Joi.object({
     name: Joi.string()
@@ -19,13 +19,13 @@ const updateContactValidator = (req, _, next) => {
     ),
   });
 
-  const { error } = schema.validate({ name, email, phone });
+  const { error } = schema.validate(body);
 
   if (!error) return next();
 
-  const message = checkValidationErrorMessage(error);
+  const message = getValidationErrorMessage(error);
 
   next(new AppError(400, message));
 };
 
-module.exports = updateContactValidator;
+module.exports = checkUpdatedContact;

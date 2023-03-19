@@ -1,9 +1,5 @@
-const addContactValidator = require("./contacts/addContactValidator");
-const updateContactValidator = require("./contacts/updateContactValidator");
-const checkContactId = require("./contacts/checkContactId");
+const contactValidators = require("./contactValidators");
 
 module.exports = {
-  addContactValidator,
-  updateContactValidator,
-  checkContactId,
+  contactValidators,
 };

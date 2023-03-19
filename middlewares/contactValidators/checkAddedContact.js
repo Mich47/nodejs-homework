@@ -1,9 +1,7 @@
 const Joi = require("joi");
-const { checkValidationErrorMessage, AppError } = require("../../helpers");
+const { getValidationErrorMessage, AppError } = require("../../helpers");
 
-const addContactValidator = (req, res, next) => {
-  const { name, email, phone } = req.body;
-
+const checkAddedContact = (req, _, next) => {
   const schema = Joi.object({
     name: Joi.string()
       .regex(/^[a-zA-Z .'-]+$/)
@@ -18,15 +16,16 @@ const addContactValidator = (req, res, next) => {
         /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{0,4}[-.\s]?\d{0,9}$/
       )
       .required(),
+    favorite: Joi.boolean(),
   });
 
-  const { error } = schema.validate({ name, email, phone });
+  const { error } = schema.validate(req.body);
 
   if (!error) return next();
 
-  const message = checkValidationErrorMessage(error);
+  const message = getValidationErrorMessage(error);
 
   next(new AppError(400, message));
 };
 
-module.exports = addContactValidator;
+module.exports = checkAddedContact;
