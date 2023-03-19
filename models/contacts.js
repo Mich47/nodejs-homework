@@ -5,7 +5,7 @@ const Contact = require("./contactModel");
  * @returns Array of all contacts
  */
 const listContacts = async () => {
-  return await Contact.find();
+  return await Contact.find().select("-__v");
 };
 
 /**
@@ -13,7 +13,7 @@ const listContacts = async () => {
  * @returns Object of contact
  */
 const getContactById = async (contactId) => {
-  return await Contact.findById(contactId);
+  return await Contact.findById(contactId).select("-__v");
 };
 
 /**
@@ -29,6 +29,7 @@ const removeContact = async (contactId) => {
  */
 const addContact = async (body) => {
   const newContact = await Contact.create(body);
+  newContact.__v = undefined;
 
   return newContact;
 };
@@ -40,7 +41,19 @@ const addContact = async (body) => {
 const updateContact = async (contactId, body) => {
   const updatedContact = Contact.findByIdAndUpdate(contactId, body, {
     new: true,
-  });
+  }).select("-__v");
+
+  return updatedContact;
+};
+
+/**
+ * Update "status" field in the contact
+ * @returns Object of updated contact
+ */
+const updateStatusContact = async (contactId, body) => {
+  const updatedContact = Contact.findByIdAndUpdate(contactId, body, {
+    new: true,
+  }).select("-__v");
 
   return updatedContact;
 };
@@ -51,4 +64,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
