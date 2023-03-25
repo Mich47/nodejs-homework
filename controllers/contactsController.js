@@ -1,11 +1,11 @@
 const { asyncWrapper } = require("../helpers");
-const contactsOperations = require("../models/contacts");
+const { contactsService } = require("../services");
 
 /**
  * Controller. Get array of all contacts and status
  */
 const listContacts = asyncWrapper(async (_, res) => {
-  const contacts = await contactsOperations.listContacts();
+  const contacts = await contactsService.listContacts();
 
   res.status(200).json(contacts);
 });
@@ -16,7 +16,7 @@ const listContacts = asyncWrapper(async (_, res) => {
 const getContactById = asyncWrapper(async (req, res) => {
   const contactId = req.params.contactId;
 
-  const contact = await contactsOperations.getContactById(contactId);
+  const contact = await contactsService.getContactById(contactId);
 
   res.status(200).json(contact);
 });
@@ -27,7 +27,7 @@ const getContactById = asyncWrapper(async (req, res) => {
 const removeContact = asyncWrapper(async (req, res) => {
   const { contactId } = req.params;
 
-  await contactsOperations.removeContact(contactId);
+  await contactsService.removeContact(contactId);
 
   res.status(200).json({ message: "contact deleted" });
 });
@@ -38,7 +38,7 @@ const removeContact = asyncWrapper(async (req, res) => {
 const addContact = asyncWrapper(async (req, res) => {
   const { body } = req;
 
-  const newContact = await contactsOperations.addContact(body);
+  const newContact = await contactsService.addContact(body);
 
   res.status(201).json(newContact);
 });
@@ -50,10 +50,7 @@ const updateContact = asyncWrapper(async (req, res) => {
   const { body } = req;
   const { contactId } = req.params;
 
-  const updatedContact = await contactsOperations.updateContact(
-    contactId,
-    body
-  );
+  const updatedContact = await contactsService.updateContact(contactId, body);
 
   res.status(200).json(updatedContact);
 });
@@ -65,7 +62,7 @@ const updateStatusContact = asyncWrapper(async (req, res) => {
   const { body } = req;
   const { contactId } = req.params;
 
-  const updatedContact = await contactsOperations.updateStatusContact(
+  const updatedContact = await contactsService.updateStatusContact(
     contactId,
     body
   );

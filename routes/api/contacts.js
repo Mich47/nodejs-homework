@@ -1,28 +1,36 @@
 const express = require("express");
-const ctrl = require("../../controllers");
+const { contactsCtrl } = require("../../controllers");
 const { contactValidators } = require("../../middlewares");
 
 const router = express.Router();
 
 router
-  .get("/", ctrl.listContacts)
-  .post("/", contactValidators.checkAddedContact, ctrl.addContact);
+  .get("/", contactsCtrl.listContacts)
+  .post("/", contactValidators.checkAddedContact, contactsCtrl.addContact);
 
 router
-  .get("/:contactId", contactValidators.checkContactId, ctrl.getContactById)
-  .delete("/:contactId", contactValidators.checkContactId, ctrl.removeContact)
+  .get(
+    "/:contactId",
+    contactValidators.checkContactId,
+    contactsCtrl.getContactById
+  )
+  .delete(
+    "/:contactId",
+    contactValidators.checkContactId,
+    contactsCtrl.removeContact
+  )
   .put(
     "/:contactId",
     contactValidators.checkContactId,
     contactValidators.checkUpdatedContact,
-    ctrl.updateContact
+    contactsCtrl.updateContact
   );
 
 router.patch(
   "/:contactId/favorite",
   contactValidators.checkContactId,
   contactValidators.checkUpdatedStatus,
-  ctrl.updateStatusContact
+  contactsCtrl.updateStatusContact
 );
 
 module.exports = router;

@@ -3,8 +3,8 @@ const logger = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 
+const { connectToMongoDB } = require("./db");
 const contactsRouter = require("./routes/api/contacts");
-const conectToMongoDB = require("./db/conection");
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-conectToMongoDB();
+connectToMongoDB();
 
 app.use("/api/contacts", contactsRouter);
 
