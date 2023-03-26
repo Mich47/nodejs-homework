@@ -6,6 +6,7 @@ const Contact = require("../../models/contactModel");
 
 const checkContactId = async (req, _, next) => {
   const { contactId } = req.params;
+  const { _id: owner } = req.user;
 
   try {
     const isValidId = ObjectId.isValid(contactId);
@@ -13,10 +14,18 @@ const checkContactId = async (req, _, next) => {
       return next(new AppError(404, "Not found"));
     }
 
-    const isExistsId = await Contact.exists({ _id: contactId });
-    if (!isExistsId) {
+    const contact = await Contact.findById(contactId).select("-__v");
+
+    if (!contact) {
       return next(new AppError(404, "Not found"));
     }
+
+    const isValidOwner = contact.owner?.equals(owner);
+    if (!isValidOwner) {
+      return next(new AppError(404, "Not found"));
+    }
+
+    req.contact = contact;
 
     next();
   } catch (error) {

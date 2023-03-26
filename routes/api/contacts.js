@@ -1,8 +1,10 @@
 const express = require("express");
 const { contactsCtrl } = require("../../controllers");
-const { contactValidators } = require("../../middlewares");
+const { contactValidators, authValidators } = require("../../middlewares");
 
 const router = express.Router();
+
+router.use("/", authValidators.checkUserToken);
 
 router
   .get("/", contactsCtrl.listContacts)

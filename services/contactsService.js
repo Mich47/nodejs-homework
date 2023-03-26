@@ -4,8 +4,8 @@ const { Contact } = require("../models");
  * Get all contacts
  * @returns Array of all contacts
  */
-const listContacts = async () => {
-  return await Contact.find().select("-__v");
+const listContacts = async (owner) => {
+  return await Contact.find({ owner }).select("-__v");
 };
 
 /**

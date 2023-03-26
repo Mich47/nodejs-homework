@@ -4,8 +4,10 @@ const { contactsService } = require("../services");
 /**
  * Controller. Get array of all contacts and status
  */
-const listContacts = asyncWrapper(async (_, res) => {
-  const contacts = await contactsService.listContacts();
+const listContacts = asyncWrapper(async (req, res) => {
+  const { _id: owner } = req.user;
+
+  const contacts = await contactsService.listContacts(owner);
 
   res.status(200).json(contacts);
 });
@@ -14,7 +16,7 @@ const listContacts = asyncWrapper(async (_, res) => {
  * Controller. Get contact by ID and status
  */
 const getContactById = asyncWrapper(async (req, res) => {
-  const contactId = req.params.contactId;
+  const { contactId } = req.params;
 
   const contact = await contactsService.getContactById(contactId);
 
@@ -37,8 +39,9 @@ const removeContact = asyncWrapper(async (req, res) => {
  */
 const addContact = asyncWrapper(async (req, res) => {
   const { body } = req;
+  const { _id: owner } = req.user;
 
-  const newContact = await contactsService.addContact(body);
+  const newContact = await contactsService.addContact({ ...body, owner });
 
   res.status(201).json(newContact);
 });

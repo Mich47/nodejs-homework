@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { connectToMongoDB } = require("./db");
+const authRouter = require("./routes/api/auth");
 const contactsRouter = require("./routes/api/contacts");
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 connectToMongoDB();
 
+app.use("/api/users", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((_, res) => {
