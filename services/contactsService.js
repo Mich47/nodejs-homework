@@ -1,7 +1,7 @@
 const { Contact } = require("../models");
 
 /**
- * Get all contacts
+ * Get all contacts of current user
  * @returns Array of all contacts
  */
 const listContacts = async (owner, { page, limit, favorite }) => {
