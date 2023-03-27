@@ -1,7 +1,7 @@
 const {
   Types: { ObjectId },
 } = require("mongoose");
-const { AppError, jwtToken, asyncWrapper } = require("../../helpers");
+const { AppError, jwtToken } = require("../../helpers");
 const { User } = require("../../models");
 
 const checkUserToken = async (req, _, next) => {
