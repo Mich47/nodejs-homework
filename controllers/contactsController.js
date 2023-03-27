@@ -7,9 +7,7 @@ const { contactsService } = require("../services");
 const listContacts = asyncWrapper(async (req, res) => {
   const { _id: owner } = req.user;
   const { page = 1, limit = 20, favorite } = req.query;
-  console.log("favorite ", favorite);
-  console.log("limit ", limit);
-  console.log("page ", page);
+
   const query = {
     page: Number(page),
     limit: Number(limit),
