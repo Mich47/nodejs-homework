@@ -6,11 +6,17 @@ const router = express.Router();
 
 router.post(
   "/register",
+  authValidators.checkUserData,
   authValidators.checkRegistrationConflict,
   authCtrl.signupUser
 );
 
-router.post("/login", authValidators.checkLoginAuth, authCtrl.loginUser);
+router.post(
+  "/login",
+  authValidators.checkUserData,
+  authValidators.checkLoginAuth,
+  authCtrl.loginUser
+);
 
 router.use("/", authValidators.checkUserToken);
 
