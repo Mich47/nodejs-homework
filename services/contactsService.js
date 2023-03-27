@@ -4,8 +4,11 @@ const { Contact } = require("../models");
  * Get all contacts
  * @returns Array of all contacts
  */
-const listContacts = async (owner) => {
-  return await Contact.find({ owner }).select("-__v");
+const listContacts = async (owner, { page, limit, favorite }) => {
+  const skip = (page - 1) * limit;
+  const filter = favorite ? { owner, favorite } : { owner };
+
+  return await Contact.find(filter).select("-__v").skip(skip).limit(limit);
 };
 
 /**
@@ -13,7 +16,9 @@ const listContacts = async (owner) => {
  * @returns Object of contact
  */
 const getContactById = async (contactId) => {
-  return await Contact.findById(contactId).select("-__v");
+  return await Contact.findById(contactId)
+    .select("-__v")
+    .populate("owner", "email subscription -_id");
 };
 
 /**
