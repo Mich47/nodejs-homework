@@ -33,7 +33,7 @@ const logout = async (id) => {
   await User.findByIdAndUpdate(id, { token: null });
 };
 
-const current = async (id) => {
+const getUser = async (id) => {
   const currentUser = await User.findById(id).select("email subscription");
 
   const { email, subscription } = currentUser;
@@ -41,4 +41,14 @@ const current = async (id) => {
   return { email, subscription };
 };
 
-module.exports = { signup, login, logout, current };
+const updateUserSubscription = async (id, newSubscription) => {
+  const updatedUser = await User.findByIdAndUpdate(id, newSubscription, {
+    new: true,
+  }).select("email subscription");
+
+  const { email, subscription } = updatedUser;
+
+  return { email, subscription };
+};
+
+module.exports = { signup, login, logout, getUser, updateUserSubscription };

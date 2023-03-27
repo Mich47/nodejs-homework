@@ -14,8 +14,14 @@ router.post("/login", authValidators.checkLoginAuth, authCtrl.loginUser);
 
 router.use("/", authValidators.checkUserToken);
 
+router.patch(
+  "/",
+  authValidators.checkUserSubscription,
+  authCtrl.updateSubscription
+);
+
 router.post("/logout", authCtrl.logoutUser);
 
-router.post("/current", authCtrl.currentUser);
+router.post("/current", authCtrl.getCurrentUser);
 
 module.exports = router;

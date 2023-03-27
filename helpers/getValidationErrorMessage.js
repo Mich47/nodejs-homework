@@ -9,8 +9,11 @@ const getValidationErrorMessage = (error) => {
     context: { key },
   } = error.details[0];
 
-  const isRequiredStatus = type === "any.required" && key === "favorite";
-  if (isRequiredStatus) {
+  const requiredField = ["favorite", "subscription"];
+
+  const isRequiredField =
+    type === "any.required" && requiredField.includes(key);
+  if (isRequiredField) {
     return `missing field "${key}"`;
   }
 

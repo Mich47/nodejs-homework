@@ -23,12 +23,27 @@ const logoutUser = asyncWrapper(async (req, res) => {
   res.sendStatus(204);
 });
 
-const currentUser = asyncWrapper(async (req, res) => {
+const getCurrentUser = asyncWrapper(async (req, res) => {
   const { _id } = req.user;
 
-  const currentUser = await authService.current(_id);
+  const currentUser = await authService.getUser(_id);
 
   res.status(200).json(currentUser);
 });
 
-module.exports = { signupUser, loginUser, logoutUser, currentUser };
+const updateSubscription = asyncWrapper(async (req, res) => {
+  const { _id } = req.user;
+  const { body } = req;
+
+  const userSubscription = await authService.updateUserSubscription(_id, body);
+
+  res.status(200).json(userSubscription);
+});
+
+module.exports = {
+  signupUser,
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  updateSubscription,
+};
