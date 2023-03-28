@@ -9,8 +9,11 @@ const getValidationErrorMessage = (error) => {
     context: { key },
   } = error.details[0];
 
-  const isRequiredStatus = type === "any.required" && key === "favorite";
-  if (isRequiredStatus) {
+  const requiredField = ["favorite", "subscription"];
+
+  const isRequiredField =
+    type === "any.required" && requiredField.includes(key);
+  if (isRequiredField) {
     return `missing field "${key}"`;
   }
 
@@ -30,6 +33,11 @@ const getValidationErrorMessage = (error) => {
       case "phone":
         message =
           "Phone number must be digits and can contain spaces, dashes, parentheses and can start with +";
+        break;
+
+      case "password":
+        message =
+          "A password must contain minimum eight characters, at least one letter and one number";
         break;
     }
   }

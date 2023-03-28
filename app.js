@@ -3,8 +3,9 @@ const logger = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 
+const { connectToMongoDB } = require("./db");
+const authRouter = require("./routes/api/auth");
 const contactsRouter = require("./routes/api/contacts");
-const conectToMongoDB = require("./db/conection");
 
 const app = express();
 
@@ -14,8 +15,9 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-conectToMongoDB();
+connectToMongoDB();
 
+app.use("/api/users", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((_, res) => {
