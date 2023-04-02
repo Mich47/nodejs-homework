@@ -1,6 +1,8 @@
 const express = require("express");
 const { authCtrl } = require("../../controllers");
 const { authValidators } = require("../../middlewares");
+const uploadAvatar = require("../../services/avatarService");
+const { avatarService } = require("../../services");
 
 const router = express.Router();
 
@@ -29,5 +31,11 @@ router.patch(
 router.post("/logout", authCtrl.logoutUser);
 
 router.post("/current", authCtrl.getCurrentUser);
+
+router.patch(
+  "/avatars",
+  authValidators.checkAndUploadUserAvatar,
+  authCtrl.updateAvatar
+);
 
 module.exports = router;

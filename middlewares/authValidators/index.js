@@ -3,6 +3,7 @@ const checkLoginAuth = require("./checkLoginAuth");
 const checkUserToken = require("./checkUserToken");
 const checkUserSubscription = require("./checkUserSubscription");
 const checkAuthData = require("./checkAuthData");
+const checkAndUploadUserAvatar = require("./checkAndUploadUserAvatar");
 
 module.exports = {
   checkRegistrationConflict,
@@ -10,4 +11,5 @@ module.exports = {
   checkUserToken,
   checkUserSubscription,
   checkAuthData,
+  checkAndUploadUserAvatar,
 };
