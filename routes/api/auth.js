@@ -1,8 +1,6 @@
 const express = require("express");
 const { authCtrl } = require("../../controllers");
 const { authValidators } = require("../../middlewares");
-const uploadAvatar = require("../../services/avatarService");
-const { avatarService } = require("../../services");
 
 const router = express.Router();
 

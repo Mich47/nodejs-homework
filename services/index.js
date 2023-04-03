@@ -1,5 +1,5 @@
 const authService = require("./authService");
 const contactsService = require("./contactsService");
-const avatarService = require("./avatarService");
+const imageService = require("./imageService");
 
-module.exports = { authService, contactsService, avatarService };
+module.exports = { authService, contactsService, imageService };

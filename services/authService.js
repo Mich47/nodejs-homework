@@ -1,11 +1,8 @@
 const path = require("path");
-const fse = require("fs-extra");
-const fs = require("fs").promises;
 const uuid = require("uuid").v4;
-const { jwtToken } = require("../helpers");
+const { jwtToken, fileOperations } = require("../helpers");
 const Jimp = require("jimp");
 const { User } = require("../models");
-const { constants } = require("fs/promises");
 
 /**
  * Create new user
@@ -82,28 +79,14 @@ const updateUserSubscription = async (id, newSubscription) => {
 /**
  * Update the avatar of the current user.
  * @returns Object of updated user's avatar
- *  {
-  fieldname: 'avatar',
-  originalname: 'DSC_4312 copy.jpg',
-  encoding: '7bit',
-  mimetype: 'image/jpeg',
-  destination: 'C:\\Users\\Mich\\Documents\\GitHub\\nodejs-homework\\tmp',
-  filename: 'avatar-1680467929320-335922387.jpg',
-  path: 'C:\\Users\\Mich\\Documents\\GitHub\\nodejs-homework\\tmp\\avatar-1680467929320-335922387.jpg',
-  size: 492117
-}
  */
+
 const updateUserAvatar = async (id, file) => {
-  const newAvatarName = uuid();
+  const newAvatarName = `${uuid()}.jpg`;
 
-  const relativePath = path.join(
-    "public",
-    "avatars",
-    `${id}`,
-    `${newAvatarName}.jpg`
-  );
+  const absolutePath = fileOperations.getAbsolutePath(id, newAvatarName);
 
-  const absolutePath = path.join(process.cwd(), relativePath);
+  const relativePath = path.relative(process.cwd(), absolutePath);
 
   const jimp = await Jimp.read(file.path);
   jimp
@@ -111,18 +94,20 @@ const updateUserAvatar = async (id, file) => {
     .quality(90) // set JPEG quality
     .write(absolutePath); // save
 
+  //delete temp file
+  await fileOperations.deleteFile(file.path);
+
   const currentUser = await User.findByIdAndUpdate(id, {
     avatarURL: relativePath,
   }).select("-password -__v");
 
   const { avatarURL } = currentUser;
 
+  //delete old avatar file
   if (!avatarURL.startsWith("http")) {
-    try {
-      await fs.unlink(path.join(process.cwd(), avatarURL));
-    } catch (error) {
-      console.log("Error: ", error.message);
-    }
+    await fileOperations.deleteFile(
+      fileOperations.getAbsolutePath(id, avatarURL)
+    );
   }
 
   return { avatarURL: relativePath };
