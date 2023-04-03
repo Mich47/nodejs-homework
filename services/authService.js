@@ -94,7 +94,7 @@ const updateUserAvatar = async (id, file) => {
     .quality(90) // set JPEG quality
     .write(absolutePath); // save
 
-  //delete temp file
+  // delete temp file
   await fileOperations.deleteFile(file.path);
 
   const currentUser = await User.findByIdAndUpdate(id, {
@@ -103,7 +103,7 @@ const updateUserAvatar = async (id, file) => {
 
   const { avatarURL } = currentUser;
 
-  //delete old avatar file
+  // delete old avatar file
   if (!avatarURL.startsWith("http")) {
     await fileOperations.deleteFile(
       fileOperations.getAbsolutePath(id, avatarURL)

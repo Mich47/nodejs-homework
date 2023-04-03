@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { enums, joiRegex } = require("../../constants");
+const { joiRegex } = require("../../constants");
 const { getValidationErrorMessage, AppError } = require("../../helpers");
 
 const checkAuthData = (req, _, next) => {
