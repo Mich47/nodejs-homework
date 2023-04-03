@@ -11,9 +11,9 @@ const { User } = require("../models");
 const signup = async ({ email, password }) => {
   const newUser = await User.create({ email, password });
 
-  const { subscription, avatarURL } = newUser;
+  const { subscription } = newUser;
 
-  return { email, subscription, avatarURL };
+  return { email, subscription };
 };
 
 /**
@@ -21,23 +21,21 @@ const signup = async ({ email, password }) => {
  * @returns Object of user data and token
  */
 const login = async (id) => {
-  const { token, email, subscription, avatarURL } =
-    await User.findByIdAndUpdate(
-      id,
-      {
-        token: jwtToken.jwtTokenSign(id),
-      },
-      {
-        new: true,
-      }
-    ).select("-password -__v");
+  const { token, email, subscription } = await User.findByIdAndUpdate(
+    id,
+    {
+      token: jwtToken.jwtTokenSign(id),
+    },
+    {
+      new: true,
+    }
+  ).select("-password -__v");
 
   return {
     token,
     user: {
       email,
       subscription,
-      avatarURL,
     },
   };
 };
@@ -56,9 +54,9 @@ const logout = async (id) => {
 const getUser = async (id) => {
   const currentUser = await User.findById(id).select("-password -__v");
 
-  const { email, subscription, avatarURL } = currentUser;
+  const { email, subscription } = currentUser;
 
-  return { email, subscription, avatarURL };
+  return { email, subscription };
 };
 
 /**
