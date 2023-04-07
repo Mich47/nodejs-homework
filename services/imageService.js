@@ -24,7 +24,7 @@ const uploadImage = (fieldName) => {
     if (!isImage) {
       cb(new AppError(400, "Unsupported image file type"), false);
     }
-
+            
     cb(null, true);
   }
 
