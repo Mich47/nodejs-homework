@@ -1,13 +1,27 @@
-const { asyncWrapper } = require("../helpers");
+const { asyncWrapper, getVerificationURL } = require("../helpers");
+const { emailService } = require("../services");
 const authService = require("../services/authService");
 
 /**
  * Controller. Create new user
  */
 const signupUser = asyncWrapper(async (req, res) => {
-  const user = await authService.signup(req.body);
+  const newUser = await authService.signup(req.body);
 
-  res.status(201).json({ user });
+  const message = await emailService.sendVerificationEmail(newUser);
+
+  res.status(200).json({ message });
+});
+
+/**
+ * Controller. Verify user.
+ */
+const verifyUser = asyncWrapper(async (req, res) => {
+  const { _id } = req.user;
+
+  await authService.verify(_id);
+
+  res.status(200).json({ message: "Verification successful" });
 });
 
 /**
@@ -75,4 +89,5 @@ module.exports = {
   getCurrentUser,
   updateSubscription,
   updateAvatar,
+  verifyUser,
 };
