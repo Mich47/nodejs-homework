@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { enums } = require("../constants");
 const { jwtToken } = require("../helpers");
 const gravatar = require("gravatar");
+const uuid = require("uuid").v4;
 
 const userModel = new Schema({
   password: {
@@ -27,6 +28,26 @@ const userModel = new Schema({
     type: String,
     default: null,
   },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: null,
+    required: [true, "Verify token is required"],
+  },
+});
+
+/**
+ * Auto verification token generating
+ */
+userModel.pre("validate", async function (next) {
+  if (this.isNew) {
+    this.verificationToken = uuid().replaceAll("-", "");
+  }
+
+  next();
 });
 
 /**
