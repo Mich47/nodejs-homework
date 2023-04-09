@@ -1,5 +1,5 @@
 const express = require("express");
-const { authCtrl } = require("../../controllers");
+const { authCtrl, emailCtrl } = require("../../controllers");
 const { authValidators } = require("../../middlewares");
 
 const router = express.Router();
@@ -16,6 +16,19 @@ router.post(
   authValidators.checkAuthData,
   authValidators.checkLoginAuth,
   authCtrl.loginUser
+);
+
+router.get(
+  "/verify",
+  authValidators.checkEmail,
+  authValidators.checkVerificationEmail,
+  emailCtrl.sendVerificationEmail
+);
+
+router.get(
+  "/verify/:verificationToken",
+  authValidators.checkVerificationToken,
+  authCtrl.verifyUser
 );
 
 router.use("/", authValidators.checkUserToken);
