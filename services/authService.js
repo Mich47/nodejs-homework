@@ -11,9 +11,20 @@ const { User } = require("../models");
 const signup = async ({ email, password }) => {
   const newUser = await User.create({ email, password });
 
-  const { subscription } = newUser;
+  const { verificationToken } = newUser;
 
-  return { email, subscription };
+  return { email, verificationToken };
+};
+
+/**
+ * Verify new user
+ * @returns Verification message
+ */
+const verify = async (id) => {
+  await User.findByIdAndUpdate(id, {
+    verificationToken: null,
+    verify: true,
+  });
 };
 
 /**
@@ -113,6 +124,7 @@ const updateUserAvatar = async (id, file) => {
 
 module.exports = {
   signup,
+  verify,
   login,
   logout,
   getUser,
