@@ -1,37 +1,55 @@
-const { getVerificationUrl } = require("../helpers");
+const { getVerificationUrl, getVerificationEmail } = require("../helpers");
 const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
+const { convert } = require("html-to-text");
 require("dotenv").config();
 
 const sendVerificationEmail = async ({ email, verificationToken }) => {
   const verificationURL = getVerificationUrl(verificationToken);
 
-  //TODO: Send email
-  console.log("TODO: Send email");
-  console.log("email ", email);
-  console.log("verificationURL ", verificationURL);
-  console.log("process.env.MAILTRAP_USER ", process.env.MAILTRAP_USER);
-  console.log("process.env.MAILTRAP_PASSWORD ", process.env.MAILTRAP_PASSWORD);
+  const html = getVerificationEmail(email, verificationURL);
 
-  const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: process.env.MAILTRAP_USER,
-      pass: process.env.MAILTRAP_PASSWORD,
-    },
-  });
+  const { NODE_ENV, MAILTRAP_USER, MAILTRAP_PASSWORD, SENDGRID_API_KEY } =
+    process.env;
 
-  // send mail with defined transport object
-  const info = await transport.sendMail({
-    from: '"Fred Foo 👻" <dmytro.muzyka@meta.ua>',
-    to: "joceb34719@djpich.com",
-    subject: "Hello ✔",
-    text: "Hello world?",
-    html: `<b>Hello world? ${verificationURL}</b>`,
-  });
+  const msg = {
+    to: email,
+    from: "test@example.com",
+    subject: "User verification",
+    text: convert(html),
+    html,
+  };
 
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+  if (NODE_ENV === "development") {
+    // Nodemailer Mailtrap
+    const transport = nodemailer.createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: MAILTRAP_USER,
+        pass: MAILTRAP_PASSWORD,
+      },
+    });
+
+    try {
+      await transport.sendMail(msg);
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    // SendGrid
+    sgMail.setApiKey(SENDGRID_API_KEY);
+
+    try {
+      await sgMail.send(msg);
+    } catch (error) {
+      console.error(error);
+
+      if (error.response) {
+        console.error(error.response.body);
+      }
+    }
+  }
 
   const message = "Verification email sent";
 
