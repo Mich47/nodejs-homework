@@ -18,7 +18,7 @@ router.post(
   authCtrl.loginUser
 );
 
-router.get(
+router.post(
   "/verify",
   authValidators.checkEmail,
   authValidators.checkVerificationEmail,

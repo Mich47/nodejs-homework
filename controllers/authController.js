@@ -1,16 +1,13 @@
-const { asyncWrapper, getVerificationURL } = require("../helpers");
-const { emailService } = require("../services");
+const { asyncWrapper } = require("../helpers");
 const authService = require("../services/authService");
 
 /**
  * Controller. Create new user
  */
 const signupUser = asyncWrapper(async (req, res) => {
-  const newUser = await authService.signup(req.body);
+  const user = await authService.signup(req.body);
 
-  const message = await emailService.sendVerificationEmail(newUser);
-
-  res.status(200).json({ message });
+  res.status(200).json({ user });
 });
 
 /**

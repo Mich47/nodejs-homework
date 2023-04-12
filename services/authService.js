@@ -3,6 +3,7 @@ const uuid = require("uuid").v4;
 const { jwtToken, fileOperations } = require("../helpers");
 const Jimp = require("jimp");
 const { User } = require("../models");
+const { emailService } = require(".");
 
 /**
  * Create new user
@@ -11,9 +12,11 @@ const { User } = require("../models");
 const signup = async ({ email, password }) => {
   const newUser = await User.create({ email, password });
 
-  const { verificationToken } = newUser;
+  const { subscription, verificationToken } = newUser;
 
-  return { email, verificationToken };
+  await emailService.sendVerificationEmail({ email, verificationToken });
+
+  return { email, subscription };
 };
 
 /**
