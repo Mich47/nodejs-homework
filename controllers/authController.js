@@ -44,7 +44,7 @@ const getCurrentUser = asyncWrapper(async (req, res) => {
 });
 
 /**
- * Controller. Update current user subscription.
+ * Controller. Update the subscription of the current user.
  * Must be one of ["starter", "pro", "business"]
  */
 const updateSubscription = asyncWrapper(async (req, res) => {
@@ -56,10 +56,23 @@ const updateSubscription = asyncWrapper(async (req, res) => {
   res.status(200).json(userSubscription);
 });
 
+/**
+ * Controller. Update the avatar of the current user.
+ */
+const updateAvatar = asyncWrapper(async (req, res) => {
+  const { _id } = req.user;
+  const { file } = req;
+
+  const userAvatar = await authService.updateUserAvatar(_id, file);
+
+  res.status(200).json(userAvatar);
+});
+
 module.exports = {
   signupUser,
   loginUser,
   logoutUser,
   getCurrentUser,
   updateSubscription,
+  updateAvatar,
 };

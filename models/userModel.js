@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const bcrypt = require("bcrypt");
 const { enums } = require("../constants");
 const { jwtToken } = require("../helpers");
+const gravatar = require("gravatar");
 
 const userModel = new Schema({
   password: {
@@ -22,16 +23,28 @@ const userModel = new Schema({
     type: String,
     default: null,
   },
+  avatarURL: {
+    type: String,
+    default: null,
+  },
 });
 
 /**
- * Auto password hashing
+ * Auto password hashing and avatar generating
  */
 userModel.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+
+  if (this.isNew) {
+    this.avatarURL = gravatar.url(
+      this.email,
+      { s: "250", r: "x", d: "identicon" },
+      true
+    );
+  }
 
   next();
 });

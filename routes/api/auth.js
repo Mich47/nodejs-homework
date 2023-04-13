@@ -6,14 +6,14 @@ const router = express.Router();
 
 router.post(
   "/register",
-  authValidators.checkUserData,
+  authValidators.checkAuthData,
   authValidators.checkRegistrationConflict,
   authCtrl.signupUser
 );
 
 router.post(
   "/login",
-  authValidators.checkUserData,
+  authValidators.checkAuthData,
   authValidators.checkLoginAuth,
   authCtrl.loginUser
 );
@@ -29,5 +29,11 @@ router.patch(
 router.post("/logout", authCtrl.logoutUser);
 
 router.post("/current", authCtrl.getCurrentUser);
+
+router.patch(
+  "/avatars",
+  authValidators.checkAndUploadUserAvatar,
+  authCtrl.updateAvatar
+);
 
 module.exports = router;

@@ -1,4 +1,7 @@
-const { jwtToken } = require("../helpers");
+const path = require("path");
+const uuid = require("uuid").v4;
+const { jwtToken, fileOperations } = require("../helpers");
+const Jimp = require("jimp");
 const { User } = require("../models");
 
 /**
@@ -26,7 +29,7 @@ const login = async (id) => {
     {
       new: true,
     }
-  ).select("token email subscription");
+  ).select("-password -__v");
 
   return {
     token,
@@ -49,7 +52,7 @@ const logout = async (id) => {
  * @returns Object of user data
  */
 const getUser = async (id) => {
-  const currentUser = await User.findById(id).select("email subscription");
+  const currentUser = await User.findById(id).select("-password -__v");
 
   const { email, subscription } = currentUser;
 
@@ -57,18 +60,62 @@ const getUser = async (id) => {
 };
 
 /**
- * Update current user subscription.
+ * Update the subscription of the current user.
  * Must be one of ["starter", "pro", "business"]
  * @returns Object of updated user data
  */
 const updateUserSubscription = async (id, newSubscription) => {
   const updatedUser = await User.findByIdAndUpdate(id, newSubscription, {
     new: true,
-  }).select("email subscription");
+  }).select("-password -__v");
 
   const { email, subscription } = updatedUser;
 
   return { email, subscription };
 };
 
-module.exports = { signup, login, logout, getUser, updateUserSubscription };
+/**
+ * Update the avatar of the current user.
+ * @returns Object of updated user's avatar
+ */
+
+const updateUserAvatar = async (id, file) => {
+  const newAvatarName = `${uuid()}.jpg`;
+
+  const absolutePath = fileOperations.getAbsolutePath(id, newAvatarName);
+
+  const relativePath = path.relative(process.cwd(), absolutePath);
+
+  const jimp = await Jimp.read(file.path);
+  jimp
+    .cover(250, 250) // resize
+    .quality(90) // set JPEG quality
+    .write(absolutePath); // save
+
+  // delete temp file
+  await fileOperations.deleteFile(file.path);
+
+  const currentUser = await User.findByIdAndUpdate(id, {
+    avatarURL: relativePath,
+  }).select("-password -__v");
+
+  const { avatarURL } = currentUser;
+
+  // delete old avatar file
+  if (!avatarURL.startsWith("http")) {
+    await fileOperations.deleteFile(
+      fileOperations.getAbsolutePath(id, avatarURL)
+    );
+  }
+
+  return { avatarURL: relativePath };
+};
+
+module.exports = {
+  signup,
+  login,
+  logout,
+  getUser,
+  updateUserSubscription,
+  updateUserAvatar,
+};
