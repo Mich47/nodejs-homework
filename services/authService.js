@@ -3,6 +3,7 @@ const uuid = require("uuid").v4;
 const { jwtToken, fileOperations } = require("../helpers");
 const Jimp = require("jimp");
 const { User } = require("../models");
+const { emailService } = require(".");
 
 /**
  * Create new user
@@ -11,9 +12,22 @@ const { User } = require("../models");
 const signup = async ({ email, password }) => {
   const newUser = await User.create({ email, password });
 
-  const { subscription } = newUser;
+  const { subscription, verificationToken } = newUser;
+
+  await emailService.sendVerificationEmail({ email, verificationToken });
 
   return { email, subscription };
+};
+
+/**
+ * Verify new user
+ * @returns Verification message
+ */
+const verify = async (id) => {
+  await User.findByIdAndUpdate(id, {
+    verificationToken: null,
+    verify: true,
+  });
 };
 
 /**
@@ -113,6 +127,7 @@ const updateUserAvatar = async (id, file) => {
 
 module.exports = {
   signup,
+  verify,
   login,
   logout,
   getUser,

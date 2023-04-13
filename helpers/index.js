@@ -3,6 +3,8 @@ const asyncWrapper = require("./asyncWrapper");
 const AppError = require("./AppError");
 const jwtToken = require("./jwtToken");
 const fileOperations = require("./fileOperations");
+const getVerificationUrl = require("./getVerificationUrl");
+const getVerificationEmail = require("./getVerificationEmail");
 
 module.exports = {
   AppError,
@@ -10,4 +12,6 @@ module.exports = {
   getValidationErrorMessage,
   jwtToken,
   fileOperations,
+  getVerificationUrl,
+  getVerificationEmail,
 };
