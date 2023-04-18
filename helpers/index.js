@@ -1,6 +1,6 @@
 const getValidationErrorMessage = require("./getValidationErrorMessage");
 const asyncWrapper = require("./asyncWrapper");
-const AppError = require("./AppError");
+const AppError = require("./appError");
 const jwtToken = require("./jwtToken");
 const fileOperations = require("./fileOperations");
 const getVerificationUrl = require("./getVerificationUrl");
